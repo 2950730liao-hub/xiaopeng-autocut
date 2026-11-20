@@ -1,4 +1,4 @@
-# Remotion 口播剪辑 Skill
+# 小芃自动剪辑 · Xiaopeng AutoCut
 
 供 Codex 使用的中文口播剪辑工作流。支持本地词级转写与对齐、粗剪去重和气口处理，再用 Remotion 制作字幕、语义动效、进度卡、音效和竖版封面。
 
@@ -7,7 +7,7 @@
 将本仓库克隆到 Codex 的 skills 目录。
 
 ```sh
-git clone https://github.com/2950730liao-hub/remotion-talking-head.git "${CODEX_HOME:-$HOME/.codex}/skills/remotion-talking-head"
+git clone https://github.com/2950730liao-hub/xiaopeng-autocut.git "${CODEX_HOME:-$HOME/.codex}/skills/remotion-talking-head"
 ```
 
 在 Codex 中使用 `$remotion-talking-head`，提供原片路径、目标和素材约束。也可下载 Releases 中的 ZIP，将解压后的 `remotion-talking-head` 文件夹放进同一目录。
