@@ -71,8 +71,11 @@ def caption_pages(text, aligned, from_frame, audio_seconds):
 
 def main():
     voice_home = Path(os.environ.get("XIAOPENG_LOCAL_VOICE_HOME", Path.home() / "Applications/Qwen3-TTS-Local"))
-    aligner_home = Path(os.environ.get("XIAOPENG_LOCAL_ALIGNER",
-                       Path.home() / ".local/share/pengchen-web/runtime/aligner"))
+    voice_home = voice_home.expanduser().resolve()
+    aligner_default = voice_home / "models/aligner"
+    if not aligner_default.is_dir():
+        aligner_default = Path.home() / ".local/share/pengchen-web/runtime/aligner"
+    aligner_home = Path(os.environ.get("XIAOPENG_LOCAL_ALIGNER", aligner_default)).expanduser()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("script", type=Path, help="UTF-8 精简稿，每个非空行是一段")
     parser.add_argument("out", type=Path, help="本片声音工作目录")
@@ -102,7 +105,7 @@ def main():
 
     started = time.monotonic()
     mx.set_default_device(mx.gpu)
-    model = load_voice(profile["model_path"])
+    model = load_voice(str(voice_home / profile["model_path"]))
     clip, sr = sf.read(speaker, dtype="float32")
     if sr != 24_000 or clip.ndim != 1 or not np.isfinite(clip).all() or np.max(np.abs(clip), initial=0) < .001:
         raise ValueError("默认音色参考需要是有效的 24 kHz 单声道录音")
