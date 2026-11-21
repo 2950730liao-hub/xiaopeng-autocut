@@ -8,11 +8,11 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {KEYWORD_DUCK,adaptiveSoundGain,ducksVoice,soundEvents} from './sound-plan.mjs';
 
-export function run(command, args, capture=false) {
-  const result=spawnSync(command,args,capture?{encoding:'utf8'}:{stdio:'inherit'});
+export function run(command, args, capture=false, stdout=false, cwd) {
+  const result=spawnSync(command,args,{...(capture?{encoding:'utf8'}:{stdio:'inherit'}),cwd});
   if(result.error) throw result.error;
   if(result.status!==0) throw Error(command+' failed: '+(result.stderr||'').slice(-2000));
-  return result.stderr;
+  return stdout?result.stdout:result.stderr;
 }
 
 const meterRate=8000;

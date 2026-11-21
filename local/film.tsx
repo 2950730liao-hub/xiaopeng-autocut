@@ -14,7 +14,8 @@ type Cue = {from:number; length:number; text:string; asset?:string; panel?:numbe
   visual?:Visual; soundFile?:string};
 type Emphasis = {term:string; from:number; length:number; captionFrom:number; captionOffset?:number; mode:'large'|'inline'};
 type Timeline = {fps:number; frames:number; clips:Clip[]; captions:Caption[]; cues:Cue[];
-  rough?:boolean; hasFont?:boolean; templateStyle?:boolean; emphasis?:Emphasis[]; audioGains?:Record<number,number>};
+  rough?:boolean; hasFont?:boolean; templateStyle?:boolean; emphasis?:Emphasis[]; audioGains?:Record<number,number>;
+  hideCaptions?:boolean};
 
 function LocalFont({templateStyle}:{templateStyle:boolean}) {
   const [handle] = useState(() => delayRender('加载字幕字体'));
@@ -122,7 +123,7 @@ function LargeKeyword({item}:{item:Emphasis}) {
   </div>;
 }
 
-function Film({clips,captions,cues,fps,rough,hasFont,templateStyle=false,emphasis=[],audioGains={}}:Timeline) {
+function Film({clips,captions,cues,fps,rough,hasFont,templateStyle=false,emphasis=[],audioGains={},hideCaptions=false}:Timeline) {
   const keywords=rough?[]:emphasis;
   const events=soundEvents({cues,emphasis,audioGains},rough);
   return <AbsoluteFill style={{background:'#161a17',fontFamily:'LocalCaption, sans-serif'}}>
@@ -139,10 +140,10 @@ function Film({clips,captions,cues,fps,rough,hasFont,templateStyle=false,emphasi
       from={cue.from} name={cue.text+' · 音效'}>
       <Audio src={staticFile(cue.file)} volume={cue.gain}/>
     </Sequence>)}
-    {keywords.filter(item=>item.mode==='large').map(item=><Sequence key={item.from} name={item.term} from={item.from} durationInFrames={item.length}>
+    {!hideCaptions&&keywords.filter(item=>item.mode==='large').map(item=><Sequence key={item.from} name={item.term} from={item.from} durationInFrames={item.length}>
       <LargeKeyword item={item}/>
     </Sequence>)}
-    {captions.map(caption=><Sequence key={caption.from} name={caption.text} from={caption.from} durationInFrames={caption.length}>
+    {!hideCaptions&&captions.map(caption=><Sequence key={caption.from} name={caption.text} from={caption.from} durationInFrames={caption.length}>
       <CaptionLine caption={caption} templateStyle={templateStyle}
         emphasis={keywords.filter(item=>item.captionFrom===caption.from)}/>
     </Sequence>)}

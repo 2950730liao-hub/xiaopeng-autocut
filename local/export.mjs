@@ -23,13 +23,15 @@ const json = prefix + '-render.json';
 const picture = prefix + '-picture.mp4';
 const rough = mode === 'rough';
 timeline.audioGains=measureAudioGains(timeline,rough);
-await writeFile(json, JSON.stringify({...timeline,rough,hasFont:existsSync('public/caption.otf')}));
+await writeFile(json, JSON.stringify({...timeline,rough,hasFont:existsSync('public/caption.otf'),
+  hideCaptions:process.env.XIAOPENG_EXTERNAL_CAPTIONS==='1'}));
 const remotion = process.platform === 'win32' ?
   path.resolve('node_modules/@remotion/cli/remotion-cli.js') :
   path.resolve('node_modules/.bin/remotion');
 const concurrency = process.env.REMOTION_FRAME_CONCURRENCY ?? '3';
 const renderArgs = ['render','film.tsx','LocalTalkingHead',picture,'--props='+json,
   '--public-dir='+path.join(root,'public'),'--muted','--concurrency='+concurrency,'--log=warn'];
+if(process.env.XIAOPENG_CHROME) renderArgs.push('--browser-executable='+process.env.XIAOPENG_CHROME);
 if(range) renderArgs.push(`--frames=${range.start}-${range.end-1}`);
 run(process.platform === 'win32' ? process.execPath : remotion,
   process.platform === 'win32' ? [remotion,...renderArgs] : renderArgs);
